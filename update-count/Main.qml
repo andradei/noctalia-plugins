@@ -11,7 +11,7 @@ Item {
   property int updateCount: 0
 
   readonly property int updateInterval: pluginApi?.pluginSettings.updateInterval || pluginApi?.manifest?.metadata.defaultSettings?.updateInterval || 0
-  readonly property string configuredTerminal: pluginApi?.pluginSettings.updateTerminalCommand || pluginApi?.manifest?.metadata.defaultSettings?.configuredTerminal || ""
+  readonly property string updateTerminalCommand: pluginApi?.pluginSettings.updateTerminalCommand || pluginApi?.manifest?.metadata.defaultSettings?.updateTerminalCommand || ""
 
   readonly property string customCmdGetNumUpdate: pluginApi?.pluginSettings.customCmdGetNumUpdate || ""
   readonly property string customCmdDoSystemUpdate: pluginApi?.pluginSettings.customCmdDoSystemUpdate || ""
@@ -80,8 +80,7 @@ Item {
 
     for (let i = 0; i < tokens.length; i++) {
       const parts = tokens[i].split("=");
-      if (parts.length !== 2)
-        continue;
+      if (parts.length !== 2) { continue; }
 
       const key = parts[0];
       const present = (parts[1] === "1");
@@ -90,8 +89,7 @@ Item {
       const entry = updater.find(e => e.key === key);
       const label = entry ? entry.name : key;
 
-      if (present)
-        Logger.i("UpdateCount", `Detected command: ${label}`);
+      if (present) { Logger.i("UpdateCount", `Detected command: ${label}`); }
     }
   }
 
@@ -120,7 +118,12 @@ Item {
       }
     }
 
-    Logger.e("UpdateCount", "Command to determine number of updates was not found/available.");
+    Logger.e(
+      "UpdateCount",
+      "No supported command to get the update count was found on your system. Install a supported helper " +
+      "(see README.md) or configure 'cmdGetNumUpdates' in the plugin settings."
+    );
+
     return "printf '0\n'";
   }
 
@@ -152,12 +155,16 @@ Item {
       }
     }
 
-    Logger.e("UpdateCount", "Command to do system update was not found/available.");
+    Logger.e(
+      "UpdateCount",
+      "No supported system update command was found on your system. Install a supported helper (see README.md) " +
+      "or configure 'customCmdDoSystemUpdate' in the plugin settings."
+    );
   }
 
   Process {
     id: doSystemUpdate
-    command: ["sh", "-c", root.terminalCmd + " " + root.cmdDoSystemUpdate()]
+    command: ["sh", "-c", root.updateTerminalCommand + " " + root.cmdDoSystemUpdate()]
   }
 
   function startDoSystemUpdate() {
