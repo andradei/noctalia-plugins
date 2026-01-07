@@ -229,7 +229,7 @@ DraggableDesktopWidget {
                         width: scaledBaseWidgetSize * 0.5
                         height: scaledBaseWidgetSize * 0.5
                         radius: Style.iRadiusXS
-                        color: model.completed ? Color.mPrimary : Color.mSurface
+                        color: showBackground ? (model.completed ? Color.mPrimary : Color.mSurface) : "transparent"
                         border.color: Color.mOutline
                         border.width: Style.borderS
                         anchors.centerIn: parent
@@ -237,9 +237,9 @@ DraggableDesktopWidget {
                         NIcon {
                           visible: model.completed
                           anchors.centerIn: parent
-                          anchors.horizontalCenterOffset: -1
+                          anchors.horizontalCenterOffset: 0  // Center the checkmark properly
                           icon: "check"
-                          color: Color.mOnPrimary
+                          color: showBackground ? Color.mOnPrimary : Color.mPrimary
                           pointSize: Math.max(Style.fontSizeXS, width * 0.5)
                         }
 
