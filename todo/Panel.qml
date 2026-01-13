@@ -25,6 +25,48 @@ Item {
     value: pluginApi?.pluginSettings?.todos || []
   }
 
+  function moveTodoToCorrectPosition(todoId) {
+    if (!pluginApi) return;
+
+    var todos = pluginApi.pluginSettings.todos || [];
+    var todoIndex = -1;
+
+    for (var i = 0; i < todos.length; i++) {
+      if (todos[i].id === todoId) {
+        todoIndex = i;
+        break;
+      }
+    }
+
+    if (todoIndex !== -1) {
+      var movedTodo = todos[todoIndex];
+
+      todos.splice(todoIndex, 1);
+
+      if (movedTodo.completed) {
+        var insertIndex = todos.length;
+        for (var j = todos.length - 1; j >= 0; j--) {
+          if (todos[j].completed) {
+            insertIndex = j + 1;
+            break;
+          }
+        }
+        todos.splice(insertIndex, 0, movedTodo);
+      } else {
+        var insertIndex = 0;
+        for (; insertIndex < todos.length; insertIndex++) {
+          if (todos[insertIndex].completed) {
+            break;
+          }
+        }
+        todos.splice(insertIndex, 0, movedTodo);
+      }
+
+      pluginApi.pluginSettings.todos = todos;
+      pluginApi.saveSettings();
+    }
+  }
+
   Component.onCompleted: {
     if (pluginApi) {
       Logger.i("Todo", "Panel initialized");
@@ -416,7 +458,8 @@ Item {
                               }
                               pluginApi.pluginSettings.completedCount = completedCount;
 
-                              pluginApi.saveSettings();
+                              moveTodoToCorrectPosition(modelData.id);
+
                               loadTodos();
                             }
                           }
