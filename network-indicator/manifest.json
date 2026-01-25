@@ -1,6 +1,6 @@
 {
   "id": "network-indicator",
-  "name": "NetworkIndicator",
+  "name": "Network Indicator",
   "version": "1.0.4",
   "minNoctaliaVersion": "3.7.5",
   "author": "tonigineer",
